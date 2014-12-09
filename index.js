@@ -39,7 +39,7 @@ module.exports = function(sails) {
       });
 
       // Whenever something changes in those dirs, reload the ORM, controllers and blueprints
-      watcher.on('all', function(action, path, stats) {
+      watcher.on('all', sails.util.debounce(function(action, path, stats) {
 
         sails.log.verbose("Detected API change -- reloading controllers / models...");
 
@@ -61,7 +61,7 @@ module.exports = function(sails) {
 
         });
 
-      });
+      }, 100));
 
       return cb();
 

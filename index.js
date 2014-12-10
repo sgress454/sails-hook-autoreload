@@ -1,27 +1,39 @@
 var path = require('path');
 module.exports = function(sails) {
 
-  var self = this;
-
   return {
 
     /**
      * Default configuration
-     * @type {Object}
+     *
+     * We do this in a function since the configuration key for
+     * the hook is itself configurable, so we can't just return
+     * an object.
      */
     defaults: function() {
+
+      // Create an object to hold default configuration
       var obj = {};
-      self.configKey = (sails.config.hooks['sails-hook-autoreload'] && sails.config.hooks['sails-hook-autoreload'].configKey) || 'autoreload';
-      obj[self.configKey] = {
+
+      // Set default configuration under the configKey for this hook,
+      // which defaults to "autoreload" but is user-configurable by
+      // setting sails.config.hooks['sails-hook-autoreload'].configKey
+      obj[this.configKey] = {
+        // Set autoreload to be active by default
         active: true
       };
+      // Return the default configuration, which will be merged into
+      // the Sails config if not overridden by the user.
       return obj;
     },
 
+    /**
+     * Initialize the hook
+     * @param  {Function} cb Callback for when we're done initializing
+     */
     initialize: function(cb) {
-
       // If the hook has been deactivated, just return
-      if (!sails.config[self.configKey].active) {
+      if (!sails.config[this.configKey].active) {
         sails.log.verbose("Autoreload hook deactivated.");
         return cb();
       }
@@ -29,16 +41,19 @@ module.exports = function(sails) {
       // Initialize the file watcher to watch controller and model dirs
       var chokidar = require('chokidar');
 
-      var dirs = [];
-
+      // Watch both the controllers and models directories
       var watcher = chokidar.watch([
         path.resolve(sails.config.appPath,'api','controllers'),
         path.resolve(sails.config.appPath,'api','models')
       ], {
+        // Ignore the initial "add" events which are generated when Chokidar
+        // starts watching files
         ignoreInitial: true
       });
 
-      // Whenever something changes in those dirs, reload the ORM, controllers and blueprints
+      // Whenever something changes in those dirs, reload the ORM, controllers and blueprints.
+      // Debounce the event handler so that it only fires after receiving all of the change
+      // events.
       watcher.on('all', sails.util.debounce(function(action, path, stats) {
 
         sails.log.verbose("Detected API change -- reloading controllers / models...");
@@ -46,6 +61,7 @@ module.exports = function(sails) {
         // Reload controller middleware
         sails.hooks.controllers.loadAndRegisterControllers(function() {
 
+          // Wait for the ORM to reload
           sails.once('hook:orm:reloaded', function() {
 
             // Flush router
@@ -63,6 +79,7 @@ module.exports = function(sails) {
 
       }, 100));
 
+      // We're done initializing.
       return cb();
 
     },

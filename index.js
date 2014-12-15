@@ -10,21 +10,12 @@ module.exports = function(sails) {
      * the hook is itself configurable, so we can't just return
      * an object.
      */
-    defaults: function() {
+    defaults: {
 
-      // Create an object to hold default configuration
-      var obj = {};
-
-      // Set default configuration under the configKey for this hook,
-      // which defaults to "autoreload" but is user-configurable by
-      // setting sails.config.hooks['sails-hook-autoreload'].configKey
-      obj[this.configKey] = {
+      __configKey__: {
         // Set autoreload to be active by default
         active: true
-      };
-      // Return the default configuration, which will be merged into
-      // the Sails config if not overridden by the user.
-      return obj;
+      }
     },
 
     /**
@@ -32,6 +23,7 @@ module.exports = function(sails) {
      * @param  {Function} cb Callback for when we're done initializing
      */
     initialize: function(cb) {
+
       // If the hook has been deactivated, just return
       if (!sails.config[this.configKey].active) {
         sails.log.verbose("Autoreload hook deactivated.");

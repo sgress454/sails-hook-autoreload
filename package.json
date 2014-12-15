@@ -22,6 +22,9 @@
   "dependencies": {
     "chokidar": "^0.9.0"
   },
+  "devDependencies": {
+    "sails": "~0.11.0"
+  },
   "contributors": [
     {
       "name": "Cody Stoltman"

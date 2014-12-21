@@ -7,8 +7,10 @@
 `npm install sails-hook-autoreload`
 
 ### Usage
+*requires at least sails >= 0.11*
 
 Just lift your app as normal, and when you add / change / remove a model or controller file, *all* controllers and models will be reloaded without having to lower / relift the app.  This includes all blueprint routes.
+
 
 ### Configuration
 

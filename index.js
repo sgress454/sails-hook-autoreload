@@ -14,7 +14,12 @@ module.exports = function(sails) {
 
       __configKey__: {
         // Set autoreload to be active by default
-        active: true
+        active: true,
+        // Set dirs to watch
+        dirs: [
+          path.resolve(sails.config.appPath,'api','controllers'),
+          path.resolve(sails.config.appPath,'api','models')
+        ]
       }
     },
 
@@ -34,14 +39,13 @@ module.exports = function(sails) {
       var chokidar = require('chokidar');
 
       // Watch both the controllers and models directories
-      var watcher = chokidar.watch([
-        path.resolve(sails.config.appPath,'api','controllers'),
-        path.resolve(sails.config.appPath,'api','models')
-      ], {
+      var watcher = chokidar.watch(sails.config[this.configKey].dirs, {
         // Ignore the initial "add" events which are generated when Chokidar
         // starts watching files
         ignoreInitial: true
       });
+
+      sails.log.verbose("Autoreload watching: ", sails.config[this.configKey].dirs);
 
       // Whenever something changes in those dirs, reload the ORM, controllers and blueprints.
       // Debounce the event handler so that it only fires after receiving all of the change

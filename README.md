@@ -19,5 +19,5 @@ By default, configuration lives in `sails.config.autoreload`.  The configuration
 Parameter      | Type                | Details
 -------------- | ------------------- |:---------------------------------
 active        | ((boolean)) | Whether or not the hook should watch for controller / model changes.  Defaults to `true`.
-
+dirs          | ((array)) | Array of strings indicating which folders should be watched.  Defaults to the `api/models` and `api/controllers` folders
 That&rsquo;s it!

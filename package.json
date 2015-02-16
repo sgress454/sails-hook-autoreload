@@ -1,6 +1,6 @@
 {
   "name": "sails-hook-autoreload",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "description": "Sails JS hook to autoreload controllers and models when changed.",
   "main": "index.js",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/balderdashy/sails-hook-autoreload.git"
+    "url": "git://github.com/sgress454/sails-hook-autoreload.git"
   },
   "author": "Balderdash",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/balderdashy/sails-hook-autoreload/issues"
+    "url": "https://github.com/sgress454/sails-hook-autoreload/issues"
   },
-  "homepage": "https://github.com/balderdashy/sails-hook-autoreload",
+  "homepage": "https://github.com/sgress454/sails-hook-autoreload",
   "sails": {
     "isHook": true
   },

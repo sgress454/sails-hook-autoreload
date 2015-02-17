@@ -20,7 +20,7 @@
     "isHook": true
   },
   "dependencies": {
-    "chokidar": "^0.9.0"
+    "chokidar": "^1.0.0-rc3"
   },
   "devDependencies": {
     "sails": "~0.11.0"

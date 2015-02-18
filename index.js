@@ -15,6 +15,9 @@ module.exports = function(sails) {
       __configKey__: {
         // Set autoreload to be active by default
         active: true,
+        //use polling to watch file changes
+        //slower but sometimes needed for VM environments 
+        usePolling: false,
         // Set dirs to watch
         dirs: [
           path.resolve(sails.config.appPath,'api','controllers'),
@@ -42,7 +45,8 @@ module.exports = function(sails) {
       var watcher = chokidar.watch(sails.config[this.configKey].dirs, {
         // Ignore the initial "add" events which are generated when Chokidar
         // starts watching files
-        ignoreInitial: true
+        ignoreInitial: true,
+        usePolling: sails.config[this.configKey].usePolling
       });
 
       sails.log.verbose("Autoreload watching: ", sails.config[this.configKey].dirs);

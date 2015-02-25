@@ -21,7 +21,8 @@ module.exports = function(sails) {
         // Set dirs to watch
         dirs: [
           path.resolve(sails.config.appPath,'api','controllers'),
-          path.resolve(sails.config.appPath,'api','models')
+          path.resolve(sails.config.appPath,'api','models'),
+          path.resolve(sails.config.appPath,'api','services')
         ]
       }
     },
@@ -63,6 +64,9 @@ module.exports = function(sails) {
 
           // Wait for the ORM to reload
           sails.once('hook:orm:reloaded', function() {
+  
+            // Reload services
+            sails.hooks.services.loadModules(function() {});
 
             // Flush router
             sails.router.flush();

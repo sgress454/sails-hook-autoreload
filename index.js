@@ -74,6 +74,9 @@ module.exports = function(sails) {
 
             // Flush router
             sails.router.flush();
+            
+            // Reload blueprints
+            sails.hooks.blueprints.bindShadowRoutes();
           });
 
           // Reload ORM

@@ -22,7 +22,9 @@ module.exports = function(sails) {
         dirs: [
           path.resolve(sails.config.appPath,'api','controllers'),
           path.resolve(sails.config.appPath,'api','models'),
-          path.resolve(sails.config.appPath,'api','services')
+          path.resolve(sails.config.appPath,'api','services'),
+          path.resolve(sails.config.appPath,'api','policies'),
+          path.resolve(sails.config.appPath,'api','responses')
         ]
       }
     },

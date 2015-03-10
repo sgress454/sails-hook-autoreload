@@ -20,5 +20,22 @@ Parameter      | Type                | Details
 -------------- | ------------------- |:---------------------------------
 active        | ((boolean)) | Whether or not the hook should watch for controller / model changes.  Defaults to `true`.
 usePolling    | ((boolean)) | Wheter or not to use the polling feature. Slower but necessary for certain environments. Defaults to `false`.
-dirs          | ((array)) | Array of strings indicating which folders should be watched.  Defaults to the `api/models` and `api/controllers` folders
+dirs          | ((array)) | Array of strings indicating which folders should be watched.  Defaults to the `api/models` and `api/controllers` folders. Note that this won't change the set of files being reloaded, but the set of files being watched for changes. As for now, it's not possible to add new directories to be reloaded.
+
+#### Example
+
+```javascript
+# [your-sails-app]/config/autoreload.js
+module.exports.autoreload = {
+  active: true,
+  usePolling: false,
+  dirs: [
+    "api/models",
+    "api/controllers"
+  ]
+};
+
+```
+
 That&rsquo;s it!
+

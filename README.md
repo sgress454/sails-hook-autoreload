@@ -25,7 +25,7 @@ dirs          | ((array)) | Array of strings indicating which folders should be 
 #### Example
 
 ```javascript
-# [your-sails-app]/config/autoreload.js
+// [your-sails-app]/config/autoreload.js
 module.exports.autoreload = {
   active: true,
   usePolling: false,

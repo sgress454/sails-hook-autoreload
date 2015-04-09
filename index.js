@@ -22,7 +22,8 @@ module.exports = function(sails) {
         dirs: [
           path.resolve(sails.config.appPath,'api','controllers'),
           path.resolve(sails.config.appPath,'api','models'),
-          path.resolve(sails.config.appPath,'api','services')
+          path.resolve(sails.config.appPath,'api','services'),
+          path.resolve(sails.config.appPath,'api','blueprints')
         ]
       }
     },
@@ -62,18 +63,20 @@ module.exports = function(sails) {
         // Reload controller middleware
         sails.hooks.controllers.loadAndRegisterControllers(function() {
 
+          // Reload services
+          sails.hooks.services.loadModules(_.noop);
+
+          // Kick off reload of blueprints
+          sails.hooks.blueprints.initialize(_.noop);
+
           // Wait for the ORM to reload
           sails.once('hook:orm:reloaded', function() {
-  
-            // Reload services
-            sails.hooks.services.loadModules(function() {});
 
             // Flush router
             sails.router.flush();
-
+            
             // Reload blueprints
             sails.hooks.blueprints.bindShadowRoutes();
-
           });
 
           // Reload ORM

@@ -58,6 +58,9 @@ module.exports = function(sails) {
       watcher.on('all', sails.util.debounce(function(action, path, stats) {
 
         sails.log.verbose("Detected API change -- reloading controllers / models...");
+ 
+        // don't drop database
+        sails.config.models.migrate = 'alter';
 
         // Reload controller middleware
         sails.hooks.controllers.loadAndRegisterControllers(function() {

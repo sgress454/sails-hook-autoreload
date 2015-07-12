@@ -21,6 +21,7 @@ Parameter      | Type                | Details
 active        | ((boolean)) | Whether or not the hook should watch for controller / model / service changes.  Defaults to `true`.
 usePolling    | ((boolean)) | Whether or not to use the polling feature. Slower but necessary for certain environments. Defaults to `false`.
 dirs          | ((array)) | Array of strings indicating which folders should be watched.  Defaults to the `api/models`, `api/controllers`, and `api/services` folders. Note that this won't change the set of files being reloaded, but the set of files being watched for changes. As for now, it's not possible to add new directories to be reloaded.
+ignored       | ((array\|string\|regexp\|function)) |  Files and/or directories to be ignored. Pass a string to be directly matched, string with glob patterns, regular expression test, function that takes the testString as an argument and returns a truthy value if it should be matched, or an array of any number and mix of these types. For more examples look up [anymatch docs](https://github.com/es128/anymatch).
 
 #### Example
 
@@ -33,10 +34,13 @@ module.exports.autoreload = {
     "api/models",
     "api/controllers",
     "api/services"
+  ],
+  ignored: [
+    // Ignore all files with .ts extension
+    "**.ts"
   ]
 };
 
 ```
 
 That&rsquo;s it!
-

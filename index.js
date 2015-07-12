@@ -16,14 +16,19 @@ module.exports = function(sails) {
         // Set autoreload to be active by default
         active: true,
         //use polling to watch file changes
-        //slower but sometimes needed for VM environments 
+        //slower but sometimes needed for VM environments
         usePolling: false,
         // Set dirs to watch
         dirs: [
           path.resolve(sails.config.appPath,'api','controllers'),
           path.resolve(sails.config.appPath,'api','models'),
           path.resolve(sails.config.appPath,'api','services')
-        ]
+        ],
+        // Ignored paths, passed to anymatch
+        // String to be directly matched, string with glob patterns,
+        // regular expression test, function
+        // or an array of any number and mix of these types
+        ignored: []
       }
     },
 
@@ -47,7 +52,8 @@ module.exports = function(sails) {
         // Ignore the initial "add" events which are generated when Chokidar
         // starts watching files
         ignoreInitial: true,
-        usePolling: sails.config[this.configKey].usePolling
+        usePolling: sails.config[this.configKey].usePolling,
+        ignored: sails.config[this.configKey].ignored
       });
 
       sails.log.verbose("Autoreload watching: ", sails.config[this.configKey].dirs);
@@ -64,7 +70,7 @@ module.exports = function(sails) {
 
           // Wait for the ORM to reload
           sails.once('hook:orm:reloaded', function() {
-  
+
             // Reload services
             sails.hooks.services.loadModules(function() {});
 

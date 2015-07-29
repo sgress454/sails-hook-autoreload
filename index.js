@@ -64,7 +64,7 @@ module.exports = function(sails) {
       watcher.on('all', sails.util.debounce(function(action, path, stats) {
 
         sails.log.verbose("Detected API change -- reloading controllers / models...");
- 
+
         // don't drop database
         sails.config.models.migrate = 'alter';
 
@@ -80,7 +80,7 @@ module.exports = function(sails) {
             // Reload blueprints on controllers
             sails.hooks.blueprints.extendControllerMiddleware();
 
-	    // Flush router
+            // Flush router
             sails.router.flush();
 
             // Reload blueprints

@@ -74,7 +74,10 @@ module.exports = function(sails) {
             // Reload services
             sails.hooks.services.loadModules(function() {});
 
-            // Flush router
+            // Reload blueprints on controllers
+            sails.hooks.blueprints.extendControllerMiddleware();
+
+	    // Flush router
             sails.router.flush();
 
             // Reload blueprints

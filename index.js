@@ -33,8 +33,8 @@ module.exports = function(sails) {
      */
     initialize: function(cb) {
 
-      // If the hook has been deactivated, just return
-      if (!sails.config[this.configKey].active) {
+      // If the hook has been deactivated, or controllers is deactivated just return
+      if (!sails.config[this.configKey].active || !sails.hooks.controllers) {
         sails.log.verbose("Autoreload hook deactivated.");
         return cb();
       }

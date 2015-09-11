@@ -22,7 +22,8 @@ module.exports = function(sails) {
         dirs: [
           path.resolve(sails.config.appPath,'api','controllers'),
           path.resolve(sails.config.appPath,'api','models'),
-          path.resolve(sails.config.appPath,'api','services')
+          path.resolve(sails.config.appPath,'api','services'),
+          path.resolve(sails.config.appPath,'config','locales')
         ],
         // Ignored paths, passed to anymatch
         // String to be directly matched, string with glob patterns,
@@ -73,6 +74,9 @@ module.exports = function(sails) {
 
           // Wait for the ORM to reload
           sails.once('hook:orm:reloaded', function() {
+
+            // Reload locales
+            sails.hooks.i18n.initialize(function() {});
 
             // Reload services
             sails.hooks.services.loadModules(function() {});

@@ -1,6 +1,6 @@
 # sails-hook-autoreload
 
-[Sails JS](http://sailsjs.org) hook to autoreload controllers and models when changed.
+[Sails JS](http://sailsjs.org) hook to autoreload controllers, models and locales when changed.
 
 ### Installation
 
@@ -33,7 +33,8 @@ module.exports.autoreload = {
   dirs: [
     "api/models",
     "api/controllers",
-    "api/services"
+    "api/services",
+    "config/locales"
   ],
   ignored: [
     // Ignore all files with .ts extension

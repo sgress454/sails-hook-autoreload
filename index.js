@@ -29,7 +29,9 @@ module.exports = function(sails) {
         // String to be directly matched, string with glob patterns,
         // regular expression test, function
         // or an array of any number and mix of these types
-        ignored: []
+        ignored: [],
+        migrate: 'alter',
+        reloaded: ['orm', 'i18n', 'services', 'blueprints', 'router']
       }
     },
 
@@ -59,6 +61,36 @@ module.exports = function(sails) {
 
       sails.log.verbose("Autoreload watching: ", sails.config[this.configKey].dirs);
 
+      var migrate = sails.config[this.configKey].migrate;
+      var reloaded = sails.config[this.configKey].reloaded;
+
+      var reload = function () {
+        if (reloaded.indexOf('i18n') !== -1) {
+          // Reload locales
+          sails.hooks.i18n.initialize(function() {});
+        }
+
+        if (reloaded.indexOf('services') !== -1) {
+          // Reload services
+          sails.hooks.services.loadModules(function() {});
+        }
+
+        if (reloaded.indexOf('blueprints') !== -1) {
+          // Reload blueprints on controllers
+          sails.hooks.blueprints.extendControllerMiddleware();
+        }
+
+        if (reloaded.indexOf('router') !== -1) {
+          // Flush router
+          sails.router.flush();
+        }
+
+        if (reloaded.indexOf('blueprints') !== -1) {
+          // Reload blueprints
+          sails.hooks.blueprints.bindShadowRoutes();
+        }
+      };
+
       // Whenever something changes in those dirs, reload the ORM, controllers and blueprints.
       // Debounce the event handler so that it only fires after receiving all of the change
       // events.
@@ -67,33 +99,20 @@ module.exports = function(sails) {
         sails.log.verbose("Detected API change -- reloading controllers / models...");
 
         // don't drop database
-        sails.config.models.migrate = 'alter';
+        sails.config.models.migrate = migrate;
 
         // Reload controller middleware
         sails.hooks.controllers.loadAndRegisterControllers(function() {
 
-          // Wait for the ORM to reload
-          sails.once('hook:orm:reloaded', function() {
+          if (reloaded.indexOf('orm') !== -1) {
+            // Wait for the ORM to reload
+            sails.once('hook:orm:reloaded', reload);
 
-            // Reload locales
-            sails.hooks.i18n.initialize(function() {});
-
-            // Reload services
-            sails.hooks.services.loadModules(function() {});
-
-            // Reload blueprints on controllers
-            sails.hooks.blueprints.extendControllerMiddleware();
-
-            // Flush router
-            sails.router.flush();
-
-            // Reload blueprints
-            sails.hooks.blueprints.bindShadowRoutes();
-
-          });
-
-          // Reload ORM
-          sails.emit('hook:orm:reload');
+            // Reload ORM
+            sails.emit('hook:orm:reload');
+          } else {
+            reload();
+          }
 
         });
 

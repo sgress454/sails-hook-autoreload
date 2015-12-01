@@ -67,7 +67,9 @@ module.exports = function(sails) {
         sails.log.verbose("Detected API change -- reloading controllers / models...");
 
         // don't drop database
-        sails.config.models.migrate = 'alter';
+        if (sails.config.models.migrate !== 'safe') {
+          sails.config.models.migrate = 'alter';
+        }
 
         // Reload controller middleware
         sails.hooks.controllers.loadAndRegisterControllers(function() {

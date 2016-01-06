@@ -22,6 +22,7 @@ active        | ((boolean)) | Whether or not the hook should watch for controlle
 usePolling    | ((boolean)) | Whether or not to use the polling feature. Slower but necessary for certain environments. Defaults to `false`.
 dirs          | ((array)) | Array of strings indicating which folders should be watched.  Defaults to the `api/models`, `api/controllers`, and `api/services` folders. Note that this won't change the set of files being reloaded, but the set of files being watched for changes. As for now, it's not possible to add new directories to be reloaded.
 ignored       | ((array\|string\|regexp\|function)) |  Files and/or directories to be ignored. Pass a string to be directly matched, string with glob patterns, regular expression test, function that takes the testString as an argument and returns a truthy value if it should be matched, or an array of any number and mix of these types. For more examples look up [anymatch docs](https://github.com/es128/anymatch).
+migrate       | ((string))  | The migrate policy (`'drop'`, `'alter'`, `'safe'`) to use for Waterline models when reloading. If present, then the value of models.migrate will be replaced with the value specified here. If omitted, then value of models.migrate will remain unchanged. 
 
 #### Example
 
@@ -39,7 +40,8 @@ module.exports.autoreload = {
   ignored: [
     // Ignore all files with .ts extension
     "**.ts"
-  ]
+  ],
+  migrate: 'safe'
 };
 
 ```

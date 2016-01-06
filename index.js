@@ -39,6 +39,9 @@ module.exports = function(sails) {
      */
     initialize: function(cb) {
 
+      // Hold the migrate policy for use in the watcher callback.
+      var migratePolicy = sails.config[this.configKey].migrate;
+
       // If the hook has been deactivated, or controllers is deactivated just return
       if (!sails.config[this.configKey].active || !sails.hooks.controllers) {
         sails.log.verbose("Autoreload hook deactivated.");
@@ -66,8 +69,9 @@ module.exports = function(sails) {
 
         sails.log.verbose("Detected API change -- reloading controllers / models...");
 
-        // don't drop database
-        sails.config.models.migrate = 'alter';
+        // Override the global migrate policy if defined in the autoreload configuration.
+        if(migratePolicy)
+          sails.config.models.migrate = migratePolicy;
 
         // Reload controller middleware
         sails.hooks.controllers.loadAndRegisterControllers(function() {

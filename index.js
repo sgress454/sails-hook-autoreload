@@ -1,4 +1,6 @@
 var path = require('path');
+var UglifyJS = require("uglify-js");
+
 module.exports = function(sails) {
 
   return {
@@ -22,14 +24,17 @@ module.exports = function(sails) {
         dirs: [
           path.resolve(sails.config.appPath,'api','controllers'),
           path.resolve(sails.config.appPath,'api','models'),
-          path.resolve(sails.config.appPath,'api','services'),
-          path.resolve(sails.config.appPath,'config','locales')
+          path.resolve(sails.config.appPath,'api','services')
         ],
         // Ignored paths, passed to anymatch
         // String to be directly matched, string with glob patterns,
         // regular expression test, function
         // or an array of any number and mix of these types
-        ignored: []
+        ignored: [],
+        // Should the changed file have its Javascript syntax checked?
+        // Prevents from sails to finish due to those errors.
+        // Defaults to false for backward compatibility
+        checkSyntax : false
       }
     },
 
@@ -59,43 +64,58 @@ module.exports = function(sails) {
 
       sails.log.verbose("Autoreload watching: ", sails.config[this.configKey].dirs);
 
+
+			var self = this;
+
       // Whenever something changes in those dirs, reload the ORM, controllers and blueprints.
       // Debounce the event handler so that it only fires after receiving all of the change
       // events.
       watcher.on('all', sails.util.debounce(function(action, path, stats) {
 
-        sails.log.verbose("Detected API change -- reloading controllers / models...");
+		      sails.log.verbose("Detected API change -- reloading controllers / models...");
 
-        // don't drop database
-        sails.config.models.migrate = 'alter';
+					var reload = true;
+          try {
+		        if (sails.config[self.configKey].checkSyntax) {
+              var minified = UglifyJS.minify(path);
+		        }
+		      }
+		      catch (e) {
+		        reload = false;
+		        sails.log.error("Could not reload", path, "due to syntax errors.");
+		        sails.log.error(e.message);
+		        sails.log.error(e.stack);
+		      }
 
-        // Reload controller middleware
-        sails.hooks.controllers.loadAndRegisterControllers(function() {
+		      if (reload) {
+		        // don't drop database
+		        sails.config.models.migrate = 'alter';
 
-          // Wait for the ORM to reload
-          sails.once('hook:orm:reloaded', function() {
+		        // Reload controller middleware
+		        sails.hooks.controllers.loadAndRegisterControllers(function() {
 
-            // Reload locales
-            sails.hooks.i18n.initialize(function() {});
+		          // Wait for the ORM to reload
+		          sails.once('hook:orm:reloaded', function() {
 
-            // Reload services
-            sails.hooks.services.loadModules(function() {});
+		            // Reload services
+		            sails.hooks.services.loadModules(function() {});
 
-            // Reload blueprints on controllers
-            sails.hooks.blueprints.extendControllerMiddleware();
+		            // Reload blueprints on controllers
+		            sails.hooks.blueprints.extendControllerMiddleware();
 
-            // Flush router
-            sails.router.flush();
+		            // Flush router
+		            sails.router.flush();
 
-            // Reload blueprints
-            sails.hooks.blueprints.bindShadowRoutes();
+		            // Reload blueprints
+		            sails.hooks.blueprints.bindShadowRoutes();
 
-          });
+		          });
 
-          // Reload ORM
-          sails.emit('hook:orm:reload');
+		          // Reload ORM
+		          sails.emit('hook:orm:reload');
 
-        });
+		        });
+		      }
 
       }, 100));
 

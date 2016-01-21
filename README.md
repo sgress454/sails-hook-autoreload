@@ -1,6 +1,12 @@
 # sails-hook-autoreload
 
-[Sails JS](http://sailsjs.org) hook to autoreload controllers, models and locales when changed.
+[Sails JS](http://sailsjs.org) hook to autoreload controllers, models, services and locales when changed.
+
+This hook is to help with situations where you are rapidly prototyping/tinkering with app code and don't want to have to keep quitting/restarting Sails to see your changes.  It is not intended to be used in a production environment.
+
+##### _Can't I just use [`forever`](https://github.com/foreverjs/forever) or [`nodemon`](https://github.com/remy/nodemon) or [insert daemon here] to do this_?
+
+Yes, yes, you absolutely can, and if stability during development is your #1 concern, you absolutely should.  Nothing beats a cold reboot to get that oh-so-pristine app state.  The advantages of this hook are (1) it's faster and (2) it won't run your bootstrap every time, which mostly contribues to (1), especially if you have a lot of fixtures in that bootstrap.  
 
 ### Installation
 

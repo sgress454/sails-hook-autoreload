@@ -25,6 +25,7 @@ module.exports = function(sails) {
           path.resolve(sails.config.appPath,'api','services'),
           path.resolve(sails.config.appPath,'config','locales')
         ],
+        overrideMigrateSetting: true,
         // Ignored paths, passed to anymatch
         // String to be directly matched, string with glob patterns,
         // regular expression test, function
@@ -38,6 +39,8 @@ module.exports = function(sails) {
      * @param  {Function} cb Callback for when we're done initializing
      */
     initialize: function(cb) {
+
+      var self = this;
 
       // If the hook has been deactivated, or controllers is deactivated just return
       if (!sails.config[this.configKey].active || !sails.hooks.controllers) {
@@ -67,7 +70,7 @@ module.exports = function(sails) {
         sails.log.verbose("Detected API change -- reloading controllers / models...");
 
         // don't drop database
-        sails.config.models.migrate = 'alter';
+        sails.config.models.migrate = sails.config[self.configKey].overrideMigrateSetting ? 'alter' : sails.config.models.migrate;
 
         // Reload controller middleware
         sails.hooks.controllers.loadAndRegisterControllers(function() {

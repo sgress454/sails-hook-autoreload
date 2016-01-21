@@ -11,6 +11,7 @@
 
 Just lift your app as normal, and when you add / change / remove a model, controller or service file, *all* controllers, models, and services will be reloaded without having to lower / relift the app. This includes all blueprint routes.
 
+> `sails-hook-autoreload` will, by default, use the `migrate: alter` strategy when reloading model files unless you explicitly set the `overrideMigrateSetting` config to `false`.  This allows you to change models without losing your development data when you have `migrate: drop` set.
 
 ### Configuration
 
@@ -19,6 +20,7 @@ By default, configuration lives in `sails.config.autoreload`.  The configuration
 Parameter      | Type                | Details
 -------------- | ------------------- |:---------------------------------
 active        | ((boolean)) | Whether or not the hook should watch for controller / model / service changes.  Defaults to `true`.
+overrideMigrateSetting | ((boolean)) | Whether or not the hook should reload the app using the `alter` migrate setting, regardless of what is set in `sails.config.models.migrate`.  Defaults to `true`.  Note that this will have no effect on models with `migrate` settings of their own that override the global setting.
 usePolling    | ((boolean)) | Whether or not to use the polling feature. Slower but necessary for certain environments. Defaults to `false`.
 dirs          | ((array)) | Array of strings indicating which folders should be watched.  Defaults to the `api/models`, `api/controllers`, and `api/services` folders. Note that this won't change the set of files being reloaded, but the set of files being watched for changes. As for now, it's not possible to add new directories to be reloaded.
 ignored       | ((array\|string\|regexp\|function)) |  Files and/or directories to be ignored. Pass a string to be directly matched, string with glob patterns, regular expression test, function that takes the testString as an argument and returns a truthy value if it should be matched, or an array of any number and mix of these types. For more examples look up [anymatch docs](https://github.com/es128/anymatch).

@@ -1,6 +1,6 @@
 {
   "name": "sails-hook-autoreload",
-  "version": "0.12.0",
+  "version": "0.13.0",
   "description": "Sails JS hook to autoreload controllers and models when changed.",
   "main": "index.js",
   "scripts": {

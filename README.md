@@ -6,7 +6,7 @@ This hook is to help with situations where you are rapidly prototyping/tinkering
 
 ##### _Can't I just use [`forever`](https://github.com/foreverjs/forever) or [`nodemon`](https://github.com/remy/nodemon) or [insert daemon here] to do this_?
 
-Yes, yes, you absolutely can, and if stability during development is your #1 concern, you absolutely should.  Nothing beats a cold reboot to get that oh-so-pristine app state.  The advantages of this hook are (1) it's faster and (2) it won't run your bootstrap every time, which mostly contributes to (1), especially if you have a lot of fixtures in that bootstrap.  
+Yes, yes, you absolutely can, and if stability during development is your #1 concern, you absolutely should.  Nothing beats a cold reboot to get that oh-so-pristine app state.  The advantages of this hook are (1) it's faster, (2) it won't run your bootstrap every time (see #1), and (3) it won't drop your sessions / socket connections if you're using in-memory adapters during development.
 
 ### Installation
 

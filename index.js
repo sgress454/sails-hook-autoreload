@@ -21,8 +21,6 @@ module.exports = function(sails) {
     defaults: {
 
       __configKey__: {
-        // Set autoreload to be active by default
-        active: true,
         //use polling to watch file changes
         //slower but sometimes needed for VM environments
         usePolling: false,
@@ -40,6 +38,15 @@ module.exports = function(sails) {
         // or an array of any number and mix of these types
         ignored: []
       }
+    },
+
+    configure: function() {
+      sails.config[this.configKey].active = 
+        // If an explicit value for the "active" config option is set, use it
+        (typeof sails.config[this.configKey].active !== 'undefined') ? 
+          // Otherwise turn off in production environment, on for all others
+          sails.config[this.configKey].active : 
+            (sails.config.environment != 'production');
     },
 
     /**

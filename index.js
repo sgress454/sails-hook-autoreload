@@ -1,3 +1,11 @@
+// oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+// WARNING: THIS HOOK USES PRIVATE, UNDOCUMENTED APIs THAT COULD CHANGE AT ANY TIME
+// oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+// This hook uses an undocumented, private Sails core method in order to reload controllers without 
+// having to lower/re-lift an app. You should not copy or reuse that code (clearly marked below) in an 
+// app, because future releases of Sails--even patch releases--may cause it to stop functioning.
+// The private API usage used below will be replaced by a public method as soon as it is available.
+// In the meantime, enjoy, and as stated in the README, do not turn this hook on in production!
 var path = require('path');
 module.exports = function(sails) {
 
@@ -72,7 +80,19 @@ module.exports = function(sails) {
         // don't drop database
         sails.config.models.migrate = sails.config[self.configKey].overrideMigrateSetting ? 'alter' : sails.config.models.migrate;
 
-        // Reload controller middleware
+        //                    \│/  ╦ ╦╔═╗╦═╗╔╗╔╦╔╗╔╔═╗  \│/                  
+        //  ─────────────────── ─  ║║║╠═╣╠╦╝║║║║║║║║ ╦  ─ ───────────────────
+        //                    /│\  ╚╩╝╩ ╩╩╚═╝╚╝╩╝╚╝╚═╝  /│\                  
+        //  ┬ ┬┌┐┌┌┬┐┌─┐┌─┐┬ ┬┌┬┐┌─┐┌┐┌┌┬┐┌─┐┌┬┐  ┌─┐┌─┐┬┌─┐  ┬┌┐┌  ┬ ┬┌─┐┌─┐
+        //  │ ││││ │││ ││  │ ││││├┤ │││ │ ├┤  ││  ├─┤├─┘│└─┐  ││││  │ │└─┐├┤ 
+        //  └─┘┘└┘─┴┘└─┘└─┘└─┘┴ ┴└─┘┘└┘ ┴ └─┘─┴┘  ┴ ┴┴  ┴└─┘  ┴┘└┘  └─┘└─┘└─┘
+        //  The loadAndRegisterControllers method is a _private_ method of the
+        //  controllers hook, and should not be used in your app code.
+        //  It will be replaced here as soon as a public "reload" method is added
+        //  to the controllers hook.  But in the meantime it's okay because
+        //  you're not using this in production, right?
+        //  
+        //  Reload controller middleware
         sails.hooks.controllers.loadAndRegisterControllers(function() {
 
           // Wait for the ORM to reload

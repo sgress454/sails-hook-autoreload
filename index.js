@@ -106,7 +106,9 @@ module.exports = function(sails) {
           sails.once('hook:orm:reloaded', function() {
 
             // Reload locales
-            sails.hooks.i18n.initialize(function() {});
+            if (sails.hooks.i18n) {
+                sails.hooks.i18n.initialize(function() {});
+            }
 
             // Reload services
             sails.hooks.services.loadModules(function() {});

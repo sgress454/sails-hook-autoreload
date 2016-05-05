@@ -107,20 +107,26 @@ module.exports = function(sails) {
 
             // Reload locales
             if (sails.hooks.i18n) {
-                sails.hooks.i18n.initialize(function() {});
+              sails.hooks.i18n.initialize(function() {});
             }
 
             // Reload services
-            sails.hooks.services.loadModules(function() {});
+            if (sails.hooks.services) {
+              sails.hooks.services.loadModules(function() {});
+            }
 
             // Reload blueprints on controllers
-            sails.hooks.blueprints.extendControllerMiddleware();
+            if (sails.hooks.blueprints) {
+              sails.hooks.blueprints.extendControllerMiddleware();
+            }
 
             // Flush router
             sails.router.flush();
 
             // Reload blueprints
-            sails.hooks.blueprints.bindShadowRoutes();
+            if (sails.hooks.blueprints) {
+              sails.hooks.blueprints.bindShadowRoutes();
+            }
 
           });
 

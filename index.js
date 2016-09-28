@@ -130,6 +130,16 @@ module.exports = function(sails) {
 
           });
 
+          // Teardown waterline-postgres connections before ORM reload
+          if (sails.adapters && sails.adapters['waterline-postgresql'] &&
+            sails.adapters['waterline-postgresql'].connections instanceof Map &&
+            sails.adapters['waterline-postgresql'].connections.size > 0
+          ) {
+            sails.adapters['waterline-postgresql'].connections.forEach(function (conn, connectionName) {
+              sails.adapters['waterline-postgresql'].teardown(connectionName);
+            })
+          }
+
           // Reload ORM
           sails.emit('hook:orm:reload');
 

@@ -4,6 +4,32 @@
 
 This hook is to help with situations where you are rapidly prototyping/tinkering with app code and don't want to have to keep quitting/restarting Sails to see your changes.  It is not intended to be used in a production environment.  _It also may not work properly in conjunction with other Sails plugins, especially ones that operate on models or watch for file changes!_
 
+##### Incompatible plugins
+
+If your app uses a plugin that adds or modifies models, services, controllers or locales, `sails-hook-autoreload` is unlikely to work properly.  Here's an incomplete list of such plugins:
+
+* sails-auto-admin
+* sails-auth
+* sails-auth-bugfix-zb
+* sails-auth-no-test
+* sails-hook-admin
+* sails-hook-confirmations
+* sails-magik-swagger
+* sails-passport-hook
+* sails-permissions
+* sails-permissions-sequelize
+* sails-swagger
+* sails-swagger-bk
+* sails-swagger-spec
+* sails-webpack
+* cision-sails-auth
+* cision-sails-permissions
+* nx-sails-swagger
+* vanuan-sails-swagger
+* Any package that relies on marlinspike.
+
+> Note: this is not a statement on the quality of the above packages.  They&rsquo;re simply incompatible with `sails-hook-autoreload`.
+
 ##### _Can't I just use [`forever`](https://github.com/foreverjs/forever) or [`nodemon`](https://github.com/remy/nodemon) or [insert daemon here] to do this_?
 
 Yes, yes, you absolutely can, and if stability during development is your #1 concern, you absolutely should.  Nothing beats a cold reboot to get that oh-so-pristine app state.  The advantages of this hook are (1) it's faster, (2) it won't run your bootstrap every time (see #1), and (3) it won't drop your sessions / socket connections if you're using in-memory adapters during development.

@@ -8,25 +8,7 @@ This hook is to help with situations where you are rapidly prototyping/tinkering
 
 If your app uses a plugin that adds or modifies models, services, controllers or locales, `sails-hook-autoreload` is unlikely to work properly.  Here's an incomplete list of such plugins:
 
-* sails-auto-admin
-* sails-auth
-* sails-auth-bugfix-zb
-* sails-auth-no-test
-* sails-hook-admin
-* sails-hook-confirmations
-* sails-magik-swagger
-* sails-passport-hook
-* sails-permissions
-* sails-permissions-sequelize
-* sails-swagger
-* sails-swagger-bk
-* sails-swagger-spec
-* sails-webpack
-* cision-sails-auth
-* cision-sails-permissions
-* nx-sails-swagger
-* vanuan-sails-swagger
-* Any package that relies on marlinspike.
+`sails-auto-admin`,` sails-auth`,` sails-auth-bugfix-zb`,` sails-auth-no-test`,` sails-hook-admin`,` sails-hook-confirmations`,` sails-magik-swagger`,` sails-passport-hook`,` sails-permissions`,` sails-permissions-sequelize`,` sails-swagger`,` sails-swagger-bk`,` sails-swagger-spec`,` sails-webpack`,` cision-sails-auth`,` cision-sails-permissions`,` nx-sails-swagger`,` vanuan-sails-swagger`, and any package that depends on `marlinspike`.
 
 > Note: this is not a statement on the quality of the above packages.  They&rsquo;re simply incompatible with `sails-hook-autoreload`.
 

@@ -20,6 +20,7 @@
     "isHook": true
   },
   "dependencies": {
+    "@sailshq/lodash": "^3.10.2",
     "chokidar": "^1.0.0"
   },
   "devDependencies": {

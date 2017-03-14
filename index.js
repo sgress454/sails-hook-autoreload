@@ -29,6 +29,7 @@ module.exports = function(sails) {
           path.resolve(sails.config.appPath,'api','controllers'),
           path.resolve(sails.config.appPath,'api','models'),
           path.resolve(sails.config.appPath,'api','services'),
+          path.resolve(sails.config.appPath,'config','routes.js'),
           path.resolve(sails.config.appPath,'config','locales')
         ],
         overrideMigrateSetting: true,
@@ -56,6 +57,8 @@ module.exports = function(sails) {
     initialize: function(cb) {
 
       var self = this;
+
+      var routesConfigPath = path.resolve(sails.config.appPath,'config','routes.js');
 
       // If the hook has been deactivated, or controllers is deactivated just return
       if (!sails.config[this.configKey].active || !sails.hooks.controllers) {
@@ -120,8 +123,25 @@ module.exports = function(sails) {
               sails.hooks.blueprints.extendControllerMiddleware();
             }
 
-            // Flush router
-            sails.router.flush();
+            // Unset all of the current routes from the `explicitRoutes` hash.
+            // This hash may include some routes added by hooks, so can't just wipe
+            // it entirely, but in case some route URLs changed we don't want
+            // the old ones hanging around.
+            sails.router.explicitRoutes = _.omit(sails.router.explicitRoutes, function(action, address) {
+              return !!sails.config.routes[address];
+            });
+            // Reload the config/routes.js file.
+            try {
+              // Remove the routes config file from the require cache.
+              delete require.cache[require.resolve(routesConfigPath)];
+              sails.config.routes = require(routesConfigPath).routes;
+            } catch (e) {
+              sails.log.verbose('sails-hook-autoreload: Could not reload `' + routesConfigPath + '`.');
+            }
+
+            // Flush the router.
+            sails.config.routes = _.extend({}, sails.router.explicitRoutes, sails.config.routes);
+            sails.router.flush(sails.config.routes);
 
             // Reload blueprints
             if (sails.hooks.blueprints) {

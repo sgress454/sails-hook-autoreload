@@ -18,6 +18,10 @@ Yes, yes, you absolutely can, and if stability during development is your #1 con
 
 ### Installation
 
+FOR SAILS v0.12.x:
+`npm install sails-hook-autoreload@for-sails0.12`
+
+FOR SAILS 1.0:
 `npm install sails-hook-autoreload`
 
 ### Usage

@@ -7,6 +7,7 @@
 // The private API usage used below will be replaced by a public method as soon as it is available.
 // In the meantime, enjoy, and as stated in the README, do not turn this hook on in production!
 var path = require('path');
+var _ = require('lodash');
 module.exports = function(sails) {
 
   return {

@@ -1,3 +1,15 @@
+# :skull: :skull: :skull: Official end-of-life notice :skull: :skull: :skull: 
+
+The **sails-hook-autoreload** package is no longer maintained as an official Sails hook.  Use at your own risk.  If you are interested in continuing development on this hook, please contact [@sgress454](@sgress454).
+
+*We are still actively maintaining [Sails](https://github.com/balderdashy/sails), and using it in all sorts of production-level apps.  We&rsquo;re just ending support for this hook.*
+
+This project started out as one of the first examples of installable hooks for Sails, and for a long time it served its purpose well.  But as Sails evolved and allowed for more complex apps, **sails-hook-autoreload** struggled to keep up, and we found ourselves using it less frequently in our own development.  As a result, we've spent less time struggling to maintain the hook (and focused our attention elsewhere in the Sails ecosystem).
+
+It may be totally possible to fix all the problems with **sails-hook-autoreload**, and if you feel you're up to the challenge (and you think it's worth it), give me a shout and we'll talk about adding you to the repo.
+
+Thanks for using [Sails](https://github.com/balderdashy/sails)!
+
 # sails-hook-autoreload
 
 [Sails JS](http://sailsjs.org) hook to autoreload controllers, models, services and locales when changed.

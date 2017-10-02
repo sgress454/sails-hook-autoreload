@@ -91,7 +91,7 @@ module.exports = function(sails) {
         sails.log.verbose("Detected API change -- reloading controllers / models...");
 
         // don't drop database
-        sails.config.models.migrate = sails.config[self.configKey].overrideMigrateSetting ? 'alter' : sails.config.models.migrate;
+        sails.config.models.migrate = sails.config[self.configKey].overrideMigrateSetting ? 'safe' : sails.config.models.migrate;
 
         //                    \│/  ╦ ╦╔═╗╦═╗╔╗╔╦╔╗╔╔═╗  \│/                  
         //  ─────────────────── ─  ║║║╠═╣╠╦╝║║║║║║║║ ╦  ─ ───────────────────

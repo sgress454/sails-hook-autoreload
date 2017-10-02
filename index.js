@@ -158,6 +158,19 @@ module.exports = function(sails) {
 
           });
 
+          // Get every sails-postgresql connection name
+          var sailsPostgreConnections = _.reduce(sails.config.connections, function (result, val, key) {
+            (val.adapter === 'sails-postgresql') && result.push(key);
+            return result;
+          }, []);
+          
+          // Tear each PostgreSQL connection down
+          _.forEach(sailsPostgreConnections, function (connection) {
+            sails.adapters['sails-postgresql'].teardown(connection, function () {
+              sails.log.info("DB connection '%s' teared down.", connection);
+            });
+          });
+          
           // Reload ORM
           sails.emit('hook:orm:reload');
 

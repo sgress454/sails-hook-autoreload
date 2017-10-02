@@ -1,6 +1,7 @@
-# :skull: :skull: :skull: Official end-of-life notice :skull: :skull: :skull: 
+# :family: :family: :family: Community maintened package :family: :family: :family: 
 
 The **sails-hook-autoreload** package is no longer maintained as an official Sails hook.  Use at your own risk.  If you are interested in continuing development on this hook, please contact [@sgress454](@sgress454).
+It is now maintained by sails lovers instead of the official sails team. 
 
 *We are still actively maintaining [Sails](https://github.com/balderdashy/sails), and using it in all sorts of production-level apps.  We&rsquo;re just ending support for this hook.*
 

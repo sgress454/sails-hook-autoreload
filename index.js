@@ -30,7 +30,9 @@ module.exports = function(sails) {
           path.resolve(sails.config.appPath,'api','controllers'),
           path.resolve(sails.config.appPath,'api','models'),
           path.resolve(sails.config.appPath,'api','services'),
+          path.resolve(sails.config.appPath,'api','policies'),
           path.resolve(sails.config.appPath,'config','routes.js'),
+          path.resolve(sails.config.appPath,'config','policies.js'),
           path.resolve(sails.config.appPath,'config','locales')
         ],
         overrideMigrateSetting: true,
@@ -109,6 +111,11 @@ module.exports = function(sails) {
           // Wait for the ORM to reload
           sails.once('hook:orm:reloaded', function() {
 
+            // Reload policies
+            if (sails.hooks.policies) {
+              sails.hooks.policies.initialize(function() {});
+            }
+            
             // Reload locales
             if (sails.hooks.i18n) {
               sails.hooks.i18n.initialize(function() {});

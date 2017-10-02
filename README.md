@@ -1,8 +1,28 @@
+# :skull: :skull: :skull: Official end-of-life notice :skull: :skull: :skull: 
+
+The **sails-hook-autoreload** package is no longer maintained as an official Sails hook.  Use at your own risk.  If you are interested in continuing development on this hook, please contact [@sgress454](@sgress454).
+
+*We are still actively maintaining [Sails](https://github.com/balderdashy/sails), and using it in all sorts of production-level apps.  We&rsquo;re just ending support for this hook.*
+
+This project started out as one of the first examples of installable hooks for Sails, and for a long time it served its purpose well.  But as Sails evolved and allowed for more complex apps, **sails-hook-autoreload** struggled to keep up, and we found ourselves using it less frequently in our own development.  As a result, we've spent less time struggling to maintain the hook (and focused our attention elsewhere in the Sails ecosystem).
+
+It may be totally possible to fix all the problems with **sails-hook-autoreload**, and if you feel you're up to the challenge (and you think it's worth it), give me a shout and we'll talk about adding you to the repo.
+
+Thanks for using [Sails](https://github.com/balderdashy/sails)!
+
 # sails-hook-autoreload
 
 [Sails JS](http://sailsjs.org) hook to autoreload controllers, models, services and locales when changed.
 
-This hook is to help with situations where you are rapidly prototyping/tinkering with app code and don't want to have to keep quitting/restarting Sails to see your changes.  It is not intended to be used in a production environment.
+This hook is to help with situations where you are rapidly prototyping/tinkering with app code and don't want to have to keep quitting/restarting Sails to see your changes.  It is not intended to be used in a production environment.  _It also may not work properly in conjunction with other Sails plugins, especially ones that operate on models or watch for file changes!_
+
+##### Incompatible plugins
+
+If your app uses a plugin that adds or modifies models, services, controllers or locales, `sails-hook-autoreload` is unlikely to work properly.  Here's an incomplete list of such plugins:
+
+`sails-auto-admin`,` sails-auth`,` sails-auth-bugfix-zb`,` sails-auth-no-test`,` sails-hook-admin`,` sails-hook-confirmations`,` sails-magik-swagger`,` sails-passport-hook`,` sails-permissions`,` sails-permissions-sequelize`,` sails-swagger`,` sails-swagger-bk`,` sails-swagger-spec`,` sails-webpack`,` cision-sails-auth`,` cision-sails-permissions`,` nx-sails-swagger`,` vanuan-sails-swagger`, and any package that depends on `marlinspike`.
+
+> Note: this is not a statement on the quality of the above packages.  They&rsquo;re simply incompatible with `sails-hook-autoreload`.
 
 ##### _Can't I just use [`forever`](https://github.com/foreverjs/forever) or [`nodemon`](https://github.com/remy/nodemon) or [insert daemon here] to do this_?
 
@@ -10,6 +30,10 @@ Yes, yes, you absolutely can, and if stability during development is your #1 con
 
 ### Installation
 
+FOR SAILS v0.12.x:
+`npm install sails-hook-autoreload@for-sails-0.12`
+
+FOR SAILS 1.0:
 `npm install sails-hook-autoreload`
 
 ### Usage

@@ -36,11 +36,11 @@ module.exports = function(sails) {
     },
 
     configure: function() {
-      sails.config[this.configKey].active = 
+      sails.config[this.configKey].active =
         // If an explicit value for the "active" config option is set, use it
-        (typeof sails.config[this.configKey].active !== 'undefined') ? 
+        (typeof sails.config[this.configKey].active !== 'undefined') ?
           // Otherwise turn off in production environment, on for all others
-          sails.config[this.configKey].active : 
+          sails.config[this.configKey].active :
             (sails.config.environment != 'production');
     },
 
@@ -82,7 +82,10 @@ module.exports = function(sails) {
         sails.log.verbose("sails-hook-autoreload: Detected API change -- reloading controllers / models...");
 
         // Don't use the configured migration strategy if `overrideMigrateSetting` is true.
-        sails.config.models.migrate = sails.config[self.configKey].overrideMigrateSetting ? 'alter' : sails.config.models.migrate;
+
+        if(sails.config.models) {
+          sails.config.models.migrate = sails.config[self.configKey].overrideMigrateSetting ? 'alter' : sails.config.models.migrate;
+        }
 
         //  Reload controller middleware
         sails.reloadActions(function() {
@@ -90,35 +93,42 @@ module.exports = function(sails) {
           // Reload helpers
           sails.hooks.helpers.reload(function() {
 
-            // Wait for the ORM to reload
-            sails.hooks.orm.reload(function() {
+            function reloadEveryElseThanOrm () {
+                // Reload services
+                if (sails.hooks.services) {
+                  sails.hooks.services.loadModules(function() {});
+                }
 
-              // Reload services
-              if (sails.hooks.services) {
-                sails.hooks.services.loadModules(function() {});
-              }
+                // Unset all of the current routes from the `explicitRoutes` hash.
+                // This hash may include some routes added by hooks, so can't just wipe
+                // it entirely, but in case some route URLs changed we don't want
+                // the old ones hanging around.
+                sails.router.explicitRoutes = _.omit(sails.router.explicitRoutes, function(action, address) {
+                  return !!sails.config.routes[address];
+                });
+                // Reload the config/routes.js file.
+                try {
+                  // Remove the routes config file from the require cache.
+                  delete require.cache[require.resolve(routesConfigPath)];
+                  sails.config.routes = require(routesConfigPath).routes;
+                } catch (e) {
+                  sails.log.verbose('sails-hook-autoreload: Could not reload `' + routesConfigPath + '`.');
+                }
 
-              // Unset all of the current routes from the `explicitRoutes` hash.
-              // This hash may include some routes added by hooks, so can't just wipe
-              // it entirely, but in case some route URLs changed we don't want
-              // the old ones hanging around.
-              sails.router.explicitRoutes = _.omit(sails.router.explicitRoutes, function(action, address) {
-                return !!sails.config.routes[address];
-              });
-              // Reload the config/routes.js file.
-              try {
-                // Remove the routes config file from the require cache.
-                delete require.cache[require.resolve(routesConfigPath)];
-                sails.config.routes = require(routesConfigPath).routes;
-              } catch (e) {
-                sails.log.verbose('sails-hook-autoreload: Could not reload `' + routesConfigPath + '`.');
-              }
+                // Flush the router.
+                sails.config.routes = _.extend({}, sails.router.explicitRoutes, sails.config.routes);
+                sails.router.flush(sails.config.routes);
+            }
 
-              // Flush the router.
-              sails.config.routes = _.extend({}, sails.router.explicitRoutes, sails.config.routes);
-              sails.router.flush(sails.config.routes);
-
-            });
+           if(sails.hooks.orm) {
+             sails.hooks.orm.reload(function() {
+               // Wait for the ORM to reload
+               reloadEveryElseThanOrm();
+             });
+           }
+           else {
+             reloadEveryElseThanOrm();
+           }
 
           });
 

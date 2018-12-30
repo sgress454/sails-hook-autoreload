@@ -13,6 +13,10 @@ Thanks for using [Sails](https://github.com/balderdashy/sails)!
 
 This hook is to help with situations where you are rapidly prototyping/tinkering with app code and don't want to have to keep quitting/restarting Sails to see your changes.  It is not intended to be used in a production environment.  _It also may not work properly in conjunction with other Sails plugins, especially ones that operate on models or watch for file changes!_
 
+##### Sails 1.0
+From sails 1.0, an error occur when the hook reload models. The [following fix](https://github.com/sgress454/sails-hook-autoreload/issues/84#issuecomment-393135923) looks to make you able to use the hook.
+`module.exports.models = { archiveModelIdentity: false }`
+
 ##### Incompatible plugins
 
 If your app uses a plugin that adds or modifies models, services, controllers or locales, `sails-hook-autoreload` is unlikely to work properly.  Here's an incomplete list of such plugins:

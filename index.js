@@ -1,6 +1,65 @@
 var path = require('path');
 var _ = require('@sailshq/lodash');
+
+// using private sails methods. Could be broken in next sails release!
+var loadHelpers = require('sails/lib/hooks/helpers/private/load-helpers');
+var iterateHelpers = require('sails/lib/hooks/helpers/private/iterate-helpers');
+
 module.exports = function(sails) {
+
+  function reloadConfigByFilepath(configPath) {
+    try {
+      // Remove the routes config file from the require cache.
+      delete require.cache[require.resolve(configPath)];
+      Object.assign(sails.config, require(configPath));
+    } catch (e) {
+      sails.log.verbose('sails-hook-autoreload: Could not reload `' + configPath + '`.');
+    }
+  }
+
+  function removeHelperByFilepath(fileName) {
+    iterateHelpers(sails.helpers, undefined, undefined, function(callable, key) {
+      var helperId = callable.toJSON()._loadedFrom;
+      var _helperIdParts = helperId.split('/');
+      _helperIdParts.pop();
+      var helperFile = path.resolve(sails.config.paths.helpers, helperId + '.js');
+
+      var store = _helperIdParts.length ? _.get(sails.helpers, _helperIdParts.join('.')) : sails.helpers;
+      if (fileName === helperFile) {
+        delete store[key];
+      }
+    })
+  }
+
+  function reloadRemovedHelpers(cb) {
+    loadHelpers(sails, cb);
+  }
+
+
+  function processChanges(changes) {
+    _.uniq(changes, changedItemUnique_cb).forEach(processChangedItem);
+    changes.length = 0;
+  }
+
+  function processChangedItem(changedItem) {
+    var changedPath = path.resolve(sails.config.appPath, changedItem[1]);
+    var action = changedItem[0];
+
+    if (changedPath.indexOf(sails.config.paths.config) === 0) {
+      if (action === 'change') {
+        reloadConfigByFilepath(changedPath)
+      }
+
+    } else if (changedPath.indexOf(sails.config.paths.helpers) === 0) {
+      if (action === 'change' || action === 'unlink') {
+        removeHelperByFilepath(changedPath);
+      }
+    }
+  }
+
+  function changedItemUnique_cb(item) {
+    return item.join()
+  }
 
   return {
 
@@ -77,7 +136,16 @@ module.exports = function(sails) {
       // Whenever something changes in those dirs, reload the ORM, controllers and blueprints.
       // Debounce the event handler so that it only fires after receiving all of the change
       // events.
+      var changes = [];
+
+      watcher.on('all', function(action, watchedPath) {
+        changes.push([action, watchedPath]);
+      });
+
+
       watcher.on('all', _.debounce(function(action, watchedPath, stats) {
+
+        processChanges(changes);
 
         sails.log.verbose("sails-hook-autoreload: Detected API change -- reloading controllers / models...");
 
@@ -91,7 +159,7 @@ module.exports = function(sails) {
         sails.reloadActions(function() {
 
           // Reload helpers
-          sails.hooks.helpers.reload(function() {
+          reloadRemovedHelpers(function() {
 
             function reloadEveryElseThanOrm () {
                 // Reload services
@@ -107,13 +175,7 @@ module.exports = function(sails) {
                   return !!sails.config.routes[address];
                 });
                 // Reload the config/routes.js file.
-                try {
-                  // Remove the routes config file from the require cache.
-                  delete require.cache[require.resolve(routesConfigPath)];
-                  sails.config.routes = require(routesConfigPath).routes;
-                } catch (e) {
-                  sails.log.verbose('sails-hook-autoreload: Could not reload `' + routesConfigPath + '`.');
-                }
+                reloadConfigByFilepath(routesConfigPath);
 
                 // Flush the router.
                 sails.config.routes = _.extend({}, sails.router.explicitRoutes, sails.config.routes);

@@ -1,4 +1,4 @@
-# :family: :family: :family: Community maintened package :family: :family: :family: 
+# :family: :family: :family: Community maintained package :family: :family: :family: 
 
 The **sails-hook-autoreload** package is no longer maintained as an official Sails hook.  Use at your own risk.  If you are interested in continuing development on this hook, please contact [@sgress454](@sgress454).  
 It is now maintained by sails lovers instead of the official sails team. 

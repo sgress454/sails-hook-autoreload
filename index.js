@@ -6,14 +6,28 @@ var loadHelpers = require('sails/lib/hooks/helpers/private/load-helpers');
 var iterateHelpers = require('sails/lib/hooks/helpers/private/iterate-helpers');
 
 module.exports = function(sails) {
+  var logMode;
 
-  function reloadConfigByFilepath(configPath) {
+  function log(data) {
+    if (logMode) {
+      if (logMode === true) {
+        sails.log(data);
+      } else if (sails.log[logMode]) {
+        sails.log[logMode](data);
+      }
+    }
+  }
+
+  function reloadConfigByFilepath(configPath, isConfig) {
     try {
       // Remove the routes config file from the require cache.
       delete require.cache[require.resolve(configPath)];
-      Object.assign(sails.config, require(configPath));
+      if (isConfig !== false) {
+        Object.assign(sails.config, require(configPath));
+      }
+      log('sails-hook-autoreload: Reloaded `' + configPath + '`.');
     } catch (e) {
-      sails.log.verbose('sails-hook-autoreload: Could not reload `' + configPath + '`.');
+      log('sails-hook-autoreload: Could not reload `' + configPath + '`.');
     }
   }
 
@@ -54,6 +68,8 @@ module.exports = function(sails) {
       if (action === 'change' || action === 'unlink') {
         removeHelperByFilepath(changedPath);
       }
+    } else if (action === 'change' || action === 'unlink') {
+      reloadConfigByFilepath(changedPath, false);
     }
   }
 
@@ -78,23 +94,27 @@ module.exports = function(sails) {
         usePolling: false,
         // Set dirs to watch
         dirs: [
-          path.resolve(sails.config.appPath,'api','controllers'),
-          path.resolve(sails.config.appPath,'api','models'),
-          path.resolve(sails.config.appPath,'api','services'),
-          path.resolve(sails.config.appPath,'api','helpers'),
-          path.resolve(sails.config.appPath,'config','locales'),
-          path.resolve(sails.config.appPath,'config','routes.js')
+          sails.config.paths.controllers,
+          sails.config.paths.models,
+          sails.config.paths.services,
+          sails.config.paths.helpers,
+          sails.config.paths.hooks,
+          sails.config.paths.views,
+          sails.config.paths.adapters,
+          sails.config.paths.config,
         ],
         overrideMigrateSetting: true,
         // Ignored paths, passed to anymatch
         // String to be directly matched, string with glob patterns,
         // regular expression test, function
         // or an array of any number and mix of these types
-        ignored: []
+        ignored: [],
+        log: 'verbose'
       }
     },
 
     configure: function() {
+      logMode = sails.config[this.configKey].log;
       sails.config[this.configKey].active =
         // If an explicit value for the "active" config option is set, use it
         (typeof sails.config[this.configKey].active !== 'undefined') ?
@@ -111,11 +131,10 @@ module.exports = function(sails) {
 
       var self = this;
 
-      var routesConfigPath = path.resolve(sails.config.appPath,'config','routes.js');
-
+      var routesConfigPath = path.resolve(sails.config.paths.config, 'routes.js');
       // If the hook has been deactivated, or controllers is deactivated just return
       if (!sails.config[this.configKey].active) {
-        sails.log.verbose("sails-hook-autoreload: Autoreload hook deactivated.");
+        log("sails-hook-autoreload: Autoreload hook deactivated.");
         return cb();
       }
 
@@ -131,7 +150,7 @@ module.exports = function(sails) {
         ignored: sails.config[this.configKey].ignored
       });
 
-      sails.log.verbose("sails-hook-autoreload: Autoreload watching: ", sails.config[this.configKey].dirs);
+      log("sails-hook-autoreload: Autoreload watching: " + JSON.stringify(sails.config[this.configKey].dirs, 0, 2));
 
       // Whenever something changes in those dirs, reload the ORM, controllers and blueprints.
       // Debounce the event handler so that it only fires after receiving all of the change
@@ -145,9 +164,9 @@ module.exports = function(sails) {
 
       watcher.on('all', _.debounce(function(action, watchedPath, stats) {
 
-        processChanges(changes);
+        log("sails-hook-autoreload: Detected API changes: " + JSON.stringify(changes, 0, 2));
 
-        sails.log.verbose("sails-hook-autoreload: Detected API change -- reloading controllers / models...");
+        processChanges(changes);
 
         // Don't use the configured migration strategy if `overrideMigrateSetting` is true.
 
@@ -178,7 +197,7 @@ module.exports = function(sails) {
                 reloadConfigByFilepath(routesConfigPath);
 
                 // Flush the router.
-                sails.config.routes = _.extend({}, sails.router.explicitRoutes, sails.config.routes);
+                sails.router.explicitRoutes = _.extend({}, sails.router.explicitRoutes, sails.config.routes);
                 sails.router.flush(sails.config.routes);
             }
 

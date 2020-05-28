@@ -24,7 +24,7 @@
     "chokidar": "^1.0.0"
   },
   "devDependencies": {
-    "sails": "~0.11.0"
+    "sails": "~1.2.4"
   },
   "contributors": [
     {
